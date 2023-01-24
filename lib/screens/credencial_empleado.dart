@@ -1,9 +1,7 @@
 import 'package:my_app/providers/metodos_http.dart' as dataservice;
 import 'package:my_app/models/respuesta_global.dart';
-import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:my_app/screens/alta_matricula.dart';
 
 // ignore: camel_case_types
 class credencial_empleado extends StatefulWidget {
@@ -26,9 +24,9 @@ final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 // ignore: camel_case_types
 class _empleadoState extends State<credencial_empleado> {
   Widget _volver() {
-    return Container(
+    return SizedBox(
       child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        Container(child: BackButton(
+        SizedBox(child: BackButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
@@ -50,7 +48,8 @@ class _empleadoState extends State<credencial_empleado> {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
                     "${widget.respuestaGlobal.empleado?.nombre} ${widget.respuestaGlobal.empleado?.apellidoPaterno} ${widget.respuestaGlobal.empleado?.apellidoMaterno}",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ),
                 Container(
@@ -116,7 +115,7 @@ class _empleadoState extends State<credencial_empleado> {
                           visible: isVisible,
                           child: Container(
                             padding: const EdgeInsets.only(bottom: 8),
-                            child: Text(
+                            child: const Text(
                               "Edición de teléfono",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
@@ -145,7 +144,7 @@ class _empleadoState extends State<credencial_empleado> {
                                 hintText: 'Teléfono',
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                       width: 3,
                                       color: Color.fromRGBO(238, 117, 35, 1)),
                                 ),
@@ -163,7 +162,7 @@ class _empleadoState extends State<credencial_empleado> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: <Widget>[
-                                  Container(
+                                  SizedBox(
                                     width: 120,
                                     height: 40,
                                     child: ElevatedButton.icon(
@@ -176,10 +175,8 @@ class _empleadoState extends State<credencial_empleado> {
                                         label: const Text("Guardar"),
                                         icon: const Icon(Icons.save)),
                                   ),
+                                  const SizedBox(width: 10),
                                   SizedBox(
-                                    width: 10,
-                                  ),
-                                  Container(
                                     width: 120,
                                     height: 40,
                                     child: ElevatedButton.icon(
@@ -211,12 +208,12 @@ class _empleadoState extends State<credencial_empleado> {
         Expanded(
             child: Column(
           children: [
-            Container(
+            SizedBox(
               child: Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    Container(
+                    SizedBox(
                       width: 120,
                       height: 60,
                       child: ElevatedButton.icon(
@@ -228,7 +225,7 @@ class _empleadoState extends State<credencial_empleado> {
                               primary: Color.fromARGB(255, 255, 0, 0)),
                           icon: const Icon(Icons.delete)),
                     ),
-                    Container(
+                    SizedBox(
                       width: 120,
                       height: 60,
                       child: ElevatedButton.icon(
@@ -267,7 +264,7 @@ class _empleadoState extends State<credencial_empleado> {
                     Navigator.of(context).pushReplacement(
                         MaterialPageRoute<Null>(
                             builder: (BuildContext context) {
-                      return new credencial_empleado(
+                      return credencial_empleado(
                           respuestaGlobal: widget.respuestaGlobal,
                           nombre: widget.nombre);
                     }));
@@ -408,18 +405,21 @@ class _empleadoState extends State<credencial_empleado> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                  color: Color.fromRGBO(0, 95, 184, 1)))
-          : RefreshIndicator(
-              onRefresh: () {
-                return _posteliminar();
-              },
-              child: Center(
-                child: _buildtodo(),
-              )),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+      child: Scaffold(
+        body: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(
+                    color: Color.fromRGBO(0, 95, 184, 1)))
+            : RefreshIndicator(
+                onRefresh: () {
+                  return _posteliminar();
+                },
+                child: Center(
+                  child: _buildtodo(),
+                )),
+      ),
     );
   }
 }

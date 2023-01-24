@@ -27,7 +27,7 @@ class _MenuState extends State<Menu> {
           nombre: widget.usuario,
         );
       case 1:
-        return relacion(
+        return Relacion(
           nombre: widget.usuario,
         );
     }

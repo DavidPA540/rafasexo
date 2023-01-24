@@ -1,25 +1,21 @@
-import 'dart:js_util';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:my_app/models/respuesta_global.dart';
 import 'package:my_app/providers/metodos_http.dart' as dataservice;
-import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:my_app/screens/empleado.dart';
-import 'package:http/http.dart' as http;
-
 import 'credencial_empleado.dart';
 
-class relacion extends StatefulWidget {
+class Relacion extends StatefulWidget {
   final String nombre;
-  const relacion({Key? key, required this.nombre}) : super(key: key);
+  const Relacion({Key? key, required this.nombre}) : super(key: key);
 
   @override
-  State<relacion> createState() => _relacion();
+  State<Relacion> createState() => _Relacion();
 }
 
-class _relacion extends State<relacion> {
+class _Relacion extends State<Relacion> {
   bool isVisible = false;
-  bool isVisible2 = true;
   late RespuestaGlobal respuestaGlobal = RespuestaGlobal();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -29,20 +25,37 @@ class _relacion extends State<relacion> {
   late final scaffoldKey = GlobalKey<ScaffoldState>();
   bool isLoading = false;
 
-  String? selectedValue;
-  List<DropdownMenuItem<String>> get dropdownItems {
-    List<DropdownMenuItem<String>> menuItems = [
-      DropdownMenuItem(child: Text("CICE"), value: "1"),
-      DropdownMenuItem(child: Text("SEMAVE"), value: "15"),
-    ];
-    return menuItems;
+  String? selectedValue, selectedValue2;
+
+  List<String> selectvalueX = ['Consultar empleado', 'Relacionar empleado'];
+
+  @override
+  void initState() {
+    configInit();
+    super.initState();
   }
 
-  String? selectedValue2;
-  List<DropdownMenuItem<String>> get dropdownItems2 {
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void configInit() {
+    selectedValue2 = selectvalueX.first;
+
+    isVisible = true;
+  }
+
+  List<DropdownMenuItem<String>> get dropdownItems {
     List<DropdownMenuItem<String>> menuItems = [
-      DropdownMenuItem(child: Text("Consultar empleado"), value: "1"),
-      DropdownMenuItem(child: Text("Relacionar empleado"), value: "0"),
+      const DropdownMenuItem(
+        value: "1",
+        child: Text("CICE"),
+      ),
+      const DropdownMenuItem(
+        value: "15",
+        child: Text("SEMAVE"),
+      ),
     ];
     return menuItems;
   }
@@ -190,245 +203,259 @@ class _relacion extends State<relacion> {
     const _style = TextStyle(fontSize: 25);
     return Scaffold(
       key: scaffoldKey,
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            scrollDirection: Axis.vertical,
-            children: [
-              Container(
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                            width: MediaQuery.of(context).size.width * .9,
-                            height: MediaQuery.of(context).size.height * .09,
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                    color: Color.fromRGBO(238, 117, 35, 1),
-                                    width: 3)),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                                hint: Text("Accion"),
-                                value: selectedValue2,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    if (selectedValue2 == "1") {
-                                      
-                                      isVisible = true;
-                                      isVisible2 = false;
-                                      }else{
-                                      isVisible = false;
-                                      isVisible2 = true;  
-                                      }
-                                     
-                                    selectedValue2 = newValue!;
-                                  });
-                                },
-                                items: dropdownItems2,
-                              ),
-                            )),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * .9,
-                          height: MediaQuery.of(context).size.height * .09,
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                  color: Color.fromRGBO(238, 117, 35, 1),
-                                  width: 3)),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              hint: Text("Empresa"),
-                              value: selectedValue,
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  selectedValue = newValue!;
-                                });
+      body: _body(),
+    );
+  }
+
+  Widget _body() {
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          scrollDirection: Axis.vertical,
+          children: [
+            _option1(),
+            const SizedBox(height: 10),
+            _option2(),
+            const SizedBox(
+              height: 10,
+            ),
+            _option3(),
+            _buttonSelect(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  SizedBox _buttonSelect() {
+    return SizedBox(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  isVisible
+                      ? SizedBox(
+                          width: MediaQuery.of(context).size.width * .4,
+                          height: 55,
+                          child: ElevatedButton.icon(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _getrelacion();
+                                }
                               },
-                              items: dropdownItems,
-                            ),
+                              label: const Text("Buscar"),
+                              icon: const Icon(Icons.search)),
+                        )
+                      : const SizedBox(),
+                  !isVisible
+                      ? SizedBox(
+                          width: MediaQuery.of(context).size.width * .4,
+                          height: 55,
+                          child: ElevatedButton.icon(
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  _showAlertDialogLogout();
+                                }
+                              },
+                              label: const Text("Relacionar"),
+                              icon: const Icon(Icons.check)),
+                        )
+                      : const SizedBox(),
+                ]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Form _option3() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            decoration: const BoxDecoration(),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * .9,
+                      height: MediaQuery.of(context).size.height * .1,
+                      child: TextFormField(
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        controller: controller2,
+                        validator: ((value) {
+                          if (value!.isEmpty) {
+                            return "Tiene que colocar la matricula";
+                          }
+                          return null;
+                        }),
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(Icons.search),
+                          hintText: 'Matricula',
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(
+                                width: 3,
+                                color: Color.fromRGBO(238, 117, 35, 1)),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width * .9,
-                                height: MediaQuery.of(context).size.height * .1,
-                                child: TextFormField(
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly
-                                  ],
-                                  controller: controller2,
-                                  validator: ((value) {
-                                    if (value!.isEmpty) {
-                                      return "Tiene que colocar la matricula";
-                                    }
-                                    return null;
-                                  }),
-                                  decoration: InputDecoration(
-                                    prefixIcon: const Icon(Icons.search),
-                                    hintText: 'Matricula',
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      borderSide: BorderSide(
-                                          width: 3,
-                                          color:
-                                              Color.fromRGBO(238, 117, 35, 1)),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Visibility(
-                                visible: isVisible,
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * .9,
-                                  height:
-                                      MediaQuery.of(context).size.height * .1,
-                                  child: TextFormField(
-                                    controller: controller,
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.digitsOnly
-                                    ],
-                                    validator: ((value2) {
-                                      if (value2!.isEmpty) {
-                                        return "Tiene que colocar la Credencial";
-                                      }
-                                      return null;
-                                    }),
-                                    decoration: InputDecoration(
-                                      prefixIcon: const Icon(Icons.search),
-                                      hintText: 'Folio Credencial',
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                        borderSide: BorderSide(
-                                            width: 3,
-                                            color: Color.fromRGBO(
-                                                238, 117, 35, 1)),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                child: Column(
+              ],
+            ),
+          ),
+          SizedBox(
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Column(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Visibility(
-                                visible: isVisible2,
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * .4,
-                                  height:
-                                      MediaQuery.of(context).size.height * .08,
-                                  child: ElevatedButton.icon(
-                                      onPressed: () {
-                                        if (_formKey.currentState!.validate()) {
-                                          _getrelacion();
-                                        }
-                                      },
-                                      label: const Text("Buscar"),
-                                      icon: const Icon(Icons.search)),
-                                )),
-                            Visibility(
-                                visible: isVisible,
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * .4,
-                                  height:
-                                      MediaQuery.of(context).size.height * .08,
-                                  child: ElevatedButton.icon(
-                                      onPressed: () async {
-                                        if (_formKey.currentState!.validate()) {
-                                          _showAlertDialogLogout();
-                                        }
-                                      },
-                                      label: const Text("Relacionar"),
-                                      icon: const Icon(Icons.check)),
-                                )),
-                          ]),
-                    ),
+                    !isVisible
+                        ? SizedBox(
+                            width: MediaQuery.of(context).size.width * .9,
+                            height: MediaQuery.of(context).size.height * .1,
+                            child: TextFormField(
+                              controller: controller,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              validator: ((value2) {
+                                if (value2!.isEmpty) {
+                                  return "Tiene que colocar la Credencial";
+                                }
+                                return null;
+                              }),
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.search),
+                                hintText: 'Folio Credencial',
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                      width: 3,
+                                      color: Color.fromRGBO(238, 117, 35, 1)),
+                                ),
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
                   ],
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  SizedBox _option2() {
+    return SizedBox(
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width * .9,
+                height: MediaQuery.of(context).size.height * .09,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: const Color.fromRGBO(238, 117, 35, 1),
+                        width: 3)),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    hint: const Text("Empresa"),
+                    value: selectedValue,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedValue = newValue!;
+                      });
+                    },
+                    items: dropdownItems,
+                  ),
                 ),
               ),
             ],
           ),
-        ),
+        ],
+      ),
+    );
+  }
+
+  SizedBox _option1() {
+    return SizedBox(
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                  width: MediaQuery.of(context).size.width * .9,
+                  height: MediaQuery.of(context).size.height * .09,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                          color: const Color.fromRGBO(238, 117, 35, 1),
+                          width: 3)),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: selectedValue2,
+                      onChanged: (String? newValue) {
+                        if (newValue == selectvalueX.first) {
+                          isVisible = true;
+                        } else {
+                          isVisible = false;
+                        }
+                        selectedValue2 = newValue!;
+                        setState(() {});
+                      },
+                      items: selectvalueX
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  )),
+            ],
+          ),
+        ],
       ),
     );
   }
